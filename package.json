@@ -3,8 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+ "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc && node dist/index.js",
+
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate",
+
+    "test": "vitest --run"
   },
   "keywords": [],
   "author": "",
