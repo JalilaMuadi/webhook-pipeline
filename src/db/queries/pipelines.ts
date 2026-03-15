@@ -5,7 +5,7 @@ import { pipelines } from "../schema.js";
 export async function createPipeline(name: string, processingType: string) {
   const [newPipeline] = await db.insert(pipelines).values({
     name,
-    processing_type: processingType,
+    processingType,
   }).returning();
   return newPipeline;
 }

@@ -1,14 +1,11 @@
-import { createPipeline, getPipelines } from "../db/queries/pipelines.js"; 
+import { createPipeline, getPipelines } from "../db/queries/pipelines.js";
 
 async function test() {
-    // Create a new pipeline
-    const newPipeline = await createPipeline("Test Pipeline", "Type A");
-    console.log("Created Pipeline:", newPipeline);
+  const newPipeline = await createPipeline("Test Pipeline", "uppercase");
+  console.log("Created Pipeline:", newPipeline);
 
-    // Get all pipelines
-    const pipelines = await getPipelines();
-    console.log("All Pipelines:", pipelines);
+  const allPipelines = await getPipelines();
+  console.log("All Pipelines:", allPipelines);
 }
- 
-test().catch(console.error);
 
+test().catch(console.error);
