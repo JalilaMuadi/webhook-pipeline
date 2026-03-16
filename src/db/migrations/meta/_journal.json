@@ -15,6 +15,13 @@
       "when": 1773579037851,
       "tag": "0001_fancy_firelord",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773664299215,
+      "tag": "0002_first_major_mapleleaf",
+      "breakpoints": true
     }
   ]
 }
