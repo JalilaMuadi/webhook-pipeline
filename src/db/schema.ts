@@ -13,7 +13,15 @@ export const pipelines = pgTable("pipelines", {
 //create subscribers table
 export const subscribers = pgTable("subscribers", {
   id: uuid("id").primaryKey().defaultRandom(),
-  pipelineId: uuid("pipeline_id").notNull(),
-  targetUrl: varchar("target_url", { length: 500 }).notNull(),
+  pipelineId: uuid("pipeline_id").notNull().references(() => pipelines.id, { onDelete: 'cascade' }), targetUrl: varchar("target_url", { length: 500 }).notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const jobs = pgTable("jobs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  pipelineId: uuid("pipeline_id").notNull().references(() => pipelines.id), 
+  payload: varchar("payload", { length: 2000 }).notNull(),
+  status: varchar("status", { length: 50 }).notNull().default("pending"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  //updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
