@@ -1,4 +1,5 @@
 import { getPendingJobsWithDetails, updateJobStatus } from "./db/queries/jobs.js";
+import { transformPayload, ProcessingType } from "./processing/actions.js";
 
 async function processJobs() {
   const pendingJobs = await getPendingJobsWithDetails();
@@ -7,32 +8,19 @@ async function processJobs() {
     try {
       await updateJobStatus(job.id, "processing");
 
-      let finalPayload = job.payload;
-
-      switch (job.processingType) {
-        case "uppercase":
-          finalPayload = job.payload.toUpperCase();
-          break;
-        case "lowercase":
-          finalPayload = job.payload.toLowerCase();
-          break;
-        case "passthrough":
-          finalPayload = job.payload;
-          break;
-        default:
-          console.log(`[Worker] Unknown type: ${job.processingType}, skipping...`);
-      }
+      const finalPayload = transformPayload(job.payload, job.processingType as ProcessingType);
 
       console.log(`[Worker] Job ${job.id} processed as ${job.processingType}.`);
       console.log(`[Worker] Result: ${finalPayload}`);
-
+      
       await updateJobStatus(job.id, "completed");
 
     } catch (err) {
-      console.error(`[Worker] Error:`, err);
+      console.error(`[Worker] Error processing job ${job.id}:`, err);
       await updateJobStatus(job.id, "failed");
     }
   }
 }
 
+console.log("Worker is running...");
 setInterval(processJobs, 10000);
