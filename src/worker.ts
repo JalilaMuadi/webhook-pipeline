@@ -13,6 +13,9 @@ async function processJobs() {
         case "uppercase":
           finalPayload = job.payload.toUpperCase();
           break;
+        case "lowercase":
+          finalPayload = job.payload.toLowerCase();
+          break;
         default:
           console.log(`[Worker] Unknown type: ${job.processingType}, skipping...`);
       }
