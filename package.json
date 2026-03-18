@@ -10,7 +10,8 @@
     "dev": "npx tsc && node dist/index.js",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "worker": "npx tsc && node dist/worker.js"
   },
   "keywords": [],
   "author": "",
