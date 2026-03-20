@@ -1,4 +1,6 @@
+import axios from "axios";
 import { getPendingJobsWithDetails, updateJobStatus } from "./db/queries/jobs.js";
+import { getSubscribersByPipelineId } from "./db/queries/subscribers.js";
 import { transformPayload, ProcessingType } from "./processing/actions.js";
 
 async function processJobs() {
@@ -9,18 +11,30 @@ async function processJobs() {
       await updateJobStatus(job.id, "processing");
 
       const finalPayload = transformPayload(job.payload, job.processingType as ProcessingType);
-
-      console.log(`[Worker] Job ${job.id} processed as ${job.processingType}.`);
-      console.log(`[Worker] Result: ${finalPayload}`);
       
+      const subscribers = await getSubscribersByPipelineId(job.pipelineId);
+
+      console.log(`[Worker] Sending job ${job.id} to ${subscribers.length} subscribers...`);
+
+      const deliveryPromises = subscribers.map(sub => 
+        axios.post(sub.targetUrl, JSON.parse(finalPayload), {
+          headers: { 'Content-Type': 'application/json' }
+        }).catch(err => {
+          console.error(`[Worker] Failed to delivery to ${sub.targetUrl}: ${err.message}`);
+        })
+      );
+
+      await Promise.all(deliveryPromises);
+
       await updateJobStatus(job.id, "completed");
+      console.log(`[Worker] Job ${job.id} delivered and completed!`);
 
     } catch (err) {
-      console.error(`[Worker] Error processing job ${job.id}:`, err);
+      console.error(`[Worker] Fatal error processing job ${job.id}:`, err);
       await updateJobStatus(job.id, "failed");
     }
   }
 }
 
-console.log("Worker is running...");
+console.log("Worker is running and listening for jobs...");
 setInterval(processJobs, 10000);
