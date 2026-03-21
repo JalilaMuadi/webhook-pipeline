@@ -12,11 +12,9 @@
     "migrate": "drizzle-kit migrate",
     "test": "vitest --run",
     "worker": "npx tsc && node dist/worker.js",
-    
     "lint": "eslint .",
     "format:write": "prettier --write \"src/**/*.{js,ts,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,ts,json,css,md}\""
-
   },
   "keywords": [],
   "author": "",
@@ -41,6 +39,7 @@
     "eslint": "^10.1.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-security": "^4.0.0",
     "prettier": "^3.8.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3",
