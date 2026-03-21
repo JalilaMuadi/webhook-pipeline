@@ -1,5 +1,5 @@
 # Use Node.js as the base image
-FROM node:20-alpine3
+FROM node:20-alpine
 
 # Create app directory
 WORKDIR /usr/src/app

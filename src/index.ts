@@ -23,7 +23,7 @@ import {
 // ============================= 
 // Express app setup
 const app = express();
-const PORT = 3000;
+const PORT = 5000;
 app.use(express.json());
 
 // ============= pipeline routes ============
@@ -118,6 +118,10 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
 
 // =============================
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
+}).on('error', (err) => {
+  console.error('SERVER ERROR:', err);
 });
+
+//process.stdin.resume();
