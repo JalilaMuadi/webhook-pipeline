@@ -17,7 +17,8 @@ import {
 } from "./db/queries/subscribers.js";
 
 import {
-  createJob
+  createJob,
+  getJobById
 } from "./db/queries/jobs.js";
 
 // ============================= 
@@ -84,7 +85,6 @@ app.post("/api/pipelines/:id/subscribers", async (req: Request, res: Response, n
 });
 
 // ============= job routes ============
-// Create a new job for a pipeline
 // Webhook Ingestion Route
 app.post("/api/ingest/:pipelineId", async (req: Request, res: Response) => {
   try {
@@ -105,6 +105,23 @@ app.post("/api/ingest/:pipelineId", async (req: Request, res: Response) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to queue job" });
+  }
+});
+
+// Get specific job status and details
+app.get("/api/jobs/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params as { id: string }; 
+    const job = await getJobById(id);
+
+    if (!job) {
+      return res.status(404).json({ error: "Job not found" });
+    }
+
+    res.status(200).json(job);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
