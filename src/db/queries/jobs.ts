@@ -19,6 +19,7 @@ export async function getPendingJobsWithDetails() {
       id: jobs.id,
       pipelineId: jobs.pipelineId,
       payload: jobs.payload,
+      retryCount: jobs.retryCount,
       processingType: pipelines.processingType,
     })
     .from(jobs)
@@ -34,4 +35,24 @@ export async function updateJobStatus(id: string, status: string) {
     .update(jobs)
     .set({ status })
     .where(eq(jobs.id, id));
+}
+
+// Get job details by ID 
+export async function getJobById(id: string) {
+  const [job] = await db
+    .select({
+      id: jobs.id,
+      status: jobs.status,
+      payload: jobs.payload,
+      retryCount: jobs.retryCount,
+      lastError: jobs.lastError,
+      createdAt: jobs.createdAt,
+      pipelineName: pipelines.name,
+      processingType: pipelines.processingType,
+    })
+    .from(jobs)
+    .innerJoin(pipelines, eq(jobs.pipelineId, pipelines.id))
+    .where(eq(jobs.id, id));
+  
+  return job;
 }
