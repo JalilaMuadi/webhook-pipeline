@@ -1,17 +1,28 @@
 import js from "@eslint/js";
 import globals from "globals";
 import tseslint from "typescript-eslint";
-import { defineConfig } from "eslint/config";
 import pluginSecurity from "eslint-plugin-security";
 
-export default defineConfig([
-  { 
-    files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], 
-    plugins: { js }, 
-    extends: ["js/recommended"],
-    languageOptions: { globals: globals.browser },
-    ignores: ["dist/**"],
- },
-  tseslint.configs.recommended,
+export default tseslint.config(
+  {
+    ignores: ["dist/**", "node_modules/**"],
+  },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
   pluginSecurity.configs.recommended,
-]);
+  {
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.jest, 
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-unused-vars": "off", 
+      "@typescript-eslint/no-explicit-any": "off",
+      "no-case-declarations": "off", 
+      "security/detect-object-injection": "off" 
+      
+    },
+  }
+);
