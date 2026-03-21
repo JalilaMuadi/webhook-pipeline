@@ -1,5 +1,8 @@
 import axios from "axios";
-import { getPendingJobsWithDetails, updateJobStatus } from "./db/queries/jobs.js";
+import {
+  getPendingJobsWithDetails,
+  updateJobStatus,
+} from "./db/queries/jobs.js";
 import { getSubscribersByPipelineId } from "./db/queries/subscribers.js";
 import { transformPayload, ProcessingType } from "./processing/actions.js";
 import { db } from "./db/index.js";
@@ -14,46 +17,56 @@ async function processJobs() {
     try {
       await updateJobStatus(job.id, "processing");
 
-      const finalPayload = transformPayload(job.payload, job.processingType as ProcessingType);
+      const finalPayload = transformPayload(
+        job.payload,
+        job.processingType as ProcessingType,
+      );
       const subscribers = await getSubscribersByPipelineId(job.pipelineId);
 
-      console.log(`[Worker] Sending job ${job.id} to ${subscribers.length} subscribers...`);
-
-      const deliveryResults = await Promise.allSettled(
-        subscribers.map(sub => 
-          axios.post(sub.targetUrl, JSON.parse(finalPayload), {
-            headers: { 'Content-Type': 'application/json' },
-            timeout: 5000 
-          })
-        )
+      console.log(
+        `[Worker] Sending job ${job.id} to ${subscribers.length} subscribers...`,
       );
 
-      const failures = deliveryResults.filter(r => r.status === 'rejected');
+      const deliveryResults = await Promise.allSettled(
+        subscribers.map((sub) =>
+          axios.post(sub.targetUrl, JSON.parse(finalPayload), {
+            headers: { "Content-Type": "application/json" },
+            timeout: 5000,
+          }),
+        ),
+      );
+
+      const failures = deliveryResults.filter((r) => r.status === "rejected");
 
       if (failures.length > 0) {
-        throw new Error(`${failures.length} subscribers failed to receive the webhook`);
+        throw new Error(
+          `${failures.length} subscribers failed to receive the webhook`,
+        );
       }
 
       await updateJobStatus(job.id, "completed");
       console.log(`[Worker] Job ${job.id} completed successfully!`);
-
     } catch (err: any) {
       console.error(`[Worker] Error processing job ${job.id}:`, err.message);
-      
+
       const currentRetry = (job as any).retryCount || 0;
 
       if (currentRetry < MAX_RETRIES) {
-        console.log(`[Worker] Retrying job ${job.id} (${currentRetry + 1}/${MAX_RETRIES})...`);
-        await db.update(jobs)
-          .set({ 
-            status: "pending", 
+        console.log(
+          `[Worker] Retrying job ${job.id} (${currentRetry + 1}/${MAX_RETRIES})...`,
+        );
+        await db
+          .update(jobs)
+          .set({
+            status: "pending",
             retryCount: currentRetry + 1,
-            lastError: err.message 
+            lastError: err.message,
           })
           .where(eq(jobs.id, job.id));
       } else {
         console.log(`[Worker] Job ${job.id} failed after maximum retries.`);
-        await db.update(jobs)
+        await db
+          .update(jobs)
           .set({ status: "failed", lastError: err.message })
           .where(eq(jobs.id, job.id));
       }

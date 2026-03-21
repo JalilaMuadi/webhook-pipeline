@@ -4,10 +4,13 @@ import { jobs, pipelines } from "../schema.js";
 import { eq, asc } from "drizzle-orm";
 
 export async function createJob(pipelineId: string, payload: string) {
-  const [newJob] = await db.insert(jobs).values({
-    pipelineId,
-    payload,
-  }).returning();
+  const [newJob] = await db
+    .insert(jobs)
+    .values({
+      pipelineId,
+      payload,
+    })
+    .returning();
 
   return newJob;
 }
@@ -27,17 +30,13 @@ export async function getPendingJobsWithDetails() {
     .where(eq(jobs.status, "pending"))
     .orderBy(asc(jobs.createdAt));
 }
-   
 
 // Update job status
 export async function updateJobStatus(id: string, status: string) {
-  await db
-    .update(jobs)
-    .set({ status })
-    .where(eq(jobs.id, id));
+  await db.update(jobs).set({ status }).where(eq(jobs.id, id));
 }
 
-// Get job details by ID 
+// Get job details by ID
 export async function getJobById(id: string) {
   const [job] = await db
     .select({
@@ -53,6 +52,6 @@ export async function getJobById(id: string) {
     .from(jobs)
     .innerJoin(pipelines, eq(jobs.pipelineId, pipelines.id))
     .where(eq(jobs.id, id));
-  
+
   return job;
 }
