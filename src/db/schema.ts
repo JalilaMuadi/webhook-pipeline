@@ -1,4 +1,4 @@
-import { pgTable, uuid, timestamp, varchar, boolean } from "drizzle-orm/pg-core";
+import { pgTable, uuid, timestamp, varchar, integer } from "drizzle-orm/pg-core";
 
 //create pipelines table
 export const pipelines = pgTable("pipelines", {
@@ -6,8 +6,6 @@ export const pipelines = pgTable("pipelines", {
   name: varchar("name", { length: 256 }).notNull(),
   processingType: varchar("processing_type", { length: 100 }).notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-  //updated_at: timestamp("updated_at").notNull().defaultNow(),
-  //is_active: boolean("is_active").notNull().default(true),
 });
 
 //create subscribers table
@@ -22,6 +20,11 @@ export const jobs = pgTable("jobs", {
   pipelineId: uuid("pipeline_id").notNull().references(() => pipelines.id), 
   payload: varchar("payload", { length: 2000 }).notNull(),
   status: varchar("status", { length: 50 }).notNull().default("pending"),
+
+  retryCount: integer("retry_count").notNull().default(0),
+  lastError: varchar("last_error", { length: 1000 }),
+
   createdAt: timestamp("created_at").notNull().defaultNow(),
-  //updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+
 });
