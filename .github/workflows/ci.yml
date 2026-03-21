@@ -37,7 +37,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Check TypeScript Build
         run: npm run build
@@ -48,7 +48,7 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/webhook_test
 
   style:
-    name: Style & Linting
+    name: Style
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -57,13 +57,14 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 21
-          cache: 'npm'
+          node-version: 22
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Check Formatting & Lint
-        run: |
-          npm run format:check || echo "No format script found"
-          npm run lint || echo "No lint script found"
+      - name: Check Formatting
+        run: npm run format:check
+
+      - name: check linting
+        run: npm run lint -- --max-warnings=0
+        
