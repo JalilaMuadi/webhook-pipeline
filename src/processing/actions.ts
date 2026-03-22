@@ -5,12 +5,14 @@ export type ProcessingType =
   | "lowercase"
   | "passthrough"
   | "add_timestamp"
-  | "mask_emails";
+  | "mask_emails"
+  | "filter_high_price"
+  | "format_for_discord";
 
 export function transformPayload(
   payload: string,
   type: ProcessingType,
-): string {
+): string | null {
   // Try to parse the payload to an object for easier manipulation
   let data: any;
   try {
@@ -51,6 +53,18 @@ export function transformPayload(
         "******@***.com",
       );
       return masked;
+
+    case "filter_high_price":
+      if (typeof data === "object" && data.price !== undefined) {
+        if (Number(data.price) < 100) return null;
+      }
+      return JSON.stringify(data);
+
+    case "format_for_discord":
+      const message = typeof data === "object"
+        ? `📢 **New Alert:** ${data.message || 'No message content'}`
+        : `📢 **New Alert:** ${data}`;
+      return JSON.stringify({ content: message });
 
     case "passthrough":
       return payload;
