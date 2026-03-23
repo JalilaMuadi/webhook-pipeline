@@ -33,7 +33,10 @@ export async function getPendingJobsWithDetails() {
 
 // Update job status
 export async function updateJobStatus(id: string, status: string) {
-  await db.update(jobs).set({ status, updatedAt: new Date() }).where(eq(jobs.id, id));
+  await db
+    .update(jobs)
+    .set({ status, updatedAt: new Date() })
+    .where(eq(jobs.id, id));
 }
 
 // Get job details by ID
