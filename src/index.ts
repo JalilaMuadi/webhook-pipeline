@@ -6,12 +6,12 @@ import { pipelines } from "./db/schema.js";
 
 import express, { Request, Response, NextFunction } from "express";
 
-import { 
-  createPipeline, 
-  getPipelines, 
-  getPipelineById, 
-  updatePipeline, 
-  deletePipeline 
+import {
+  createPipeline,
+  getPipelines,
+  getPipelineById,
+  updatePipeline,
+  deletePipeline,
 } from "./db/queries/pipelines.js";
 
 import {
@@ -35,9 +35,8 @@ app.get("/api/pipelines/:id", async (req: Request, res: Response) => {
     const id = req.params.id as string;
     const pipeline = await getPipelineById(id);
 
-    if (!pipeline) 
-      return res.status(404).json({ error: "Pipeline not found" });
-    
+    if (!pipeline) return res.status(404).json({ error: "Pipeline not found" });
+
     res.status(200).json(pipeline);
   } catch (err) {
     console.error(err);
@@ -85,8 +84,8 @@ app.patch("/api/pipelines/:id", async (req: Request, res: Response) => {
     const { name, processingType } = req.body;
     const id = req.params.id as string;
     const updatedPipeline = await updatePipeline(id, { name, processingType });
-    
-    if (!updatedPipeline) 
+
+    if (!updatedPipeline)
       return res.status(404).json({ error: "Pipeline not found" });
 
     res.status(200).json(updatedPipeline);
@@ -102,17 +101,14 @@ app.delete("/api/pipelines/:id", async (req: Request, res: Response) => {
     const id = req.params.id as string;
     const deleted = await deletePipeline(id);
 
-    if (!deleted) 
-      return res.status(404).json({ error: "Pipeline not found" });
+    if (!deleted) return res.status(404).json({ error: "Pipeline not found" });
 
     res.status(200).json({ message: "Pipeline deleted successfully" });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 // ============= subscriber routes ============
 // Get subscribers for a pipeline

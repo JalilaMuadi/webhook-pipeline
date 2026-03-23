@@ -29,7 +29,10 @@ export async function getPipelineById(id: string) {
 }
 
 // UPDATE an existing pipeline
-export async function updatePipeline(id: string, data: Partial<{ name: string; processingType: string }>) {
+export async function updatePipeline(
+  id: string,
+  data: Partial<{ name: string; processingType: string }>,
+) {
   const [updated] = await db
     .update(pipelines)
     .set(data)
