@@ -25,7 +25,7 @@ async function processJobs() {
       if (finalPayload === null) {
         console.log(`[Worker] Job ${job.id} was filtered out (skipped).`);
         await updateJobStatus(job.id, "completed");
-        continue; 
+        continue;
       }
 
       const subscribers = await getSubscribersByPipelineId(job.pipelineId);

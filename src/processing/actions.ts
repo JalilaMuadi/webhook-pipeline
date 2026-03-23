@@ -61,9 +61,10 @@ export function transformPayload(
       return JSON.stringify(data);
 
     case "format_for_discord":
-      const message = typeof data === "object"
-        ? `📢 **New Alert:** ${data.message || 'No message content'}`
-        : `📢 **New Alert:** ${data}`;
+      const message =
+        typeof data === "object"
+          ? `📢 **New Alert:** ${data.message || "No message content"}`
+          : `📢 **New Alert:** ${data}`;
       return JSON.stringify({ content: message });
 
     case "passthrough":
