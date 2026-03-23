@@ -6,7 +6,13 @@ import { pipelines } from "./db/schema.js";
 
 import express, { Request, Response, NextFunction } from "express";
 
-import { createPipeline, getPipelines } from "./db/queries/pipelines.js";
+import { 
+  createPipeline, 
+  getPipelines, 
+  getPipelineById, 
+  updatePipeline, 
+  deletePipeline 
+} from "./db/queries/pipelines.js";
 
 import {
   createSubscriber,
@@ -22,6 +28,23 @@ const PORT = 5000;
 app.use(express.json());
 
 // ============= pipeline routes ============
+
+// GET a single pipeline by ID
+app.get("/api/pipelines/:id", async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const pipeline = await getPipelineById(id);
+
+    if (!pipeline) 
+      return res.status(404).json({ error: "Pipeline not found" });
+    
+    res.status(200).json(pipeline);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 //get all pipelines
 app.get(
   "/api/pipelines",
@@ -55,6 +78,41 @@ app.post(
     }
   },
 );
+
+// UPDATE a pipeline (PATCH)
+app.patch("/api/pipelines/:id", async (req: Request, res: Response) => {
+  try {
+    const { name, processingType } = req.body;
+    const id = req.params.id as string;
+    const updatedPipeline = await updatePipeline(id, { name, processingType });
+    
+    if (!updatedPipeline) 
+      return res.status(404).json({ error: "Pipeline not found" });
+
+    res.status(200).json(updatedPipeline);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// DELETE a pipeline
+app.delete("/api/pipelines/:id", async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const deleted = await deletePipeline(id);
+
+    if (!deleted) 
+      return res.status(404).json({ error: "Pipeline not found" });
+
+    res.status(200).json({ message: "Pipeline deleted successfully" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 // ============= subscriber routes ============
 // Get subscribers for a pipeline

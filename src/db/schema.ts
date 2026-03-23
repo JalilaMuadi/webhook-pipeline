@@ -28,7 +28,7 @@ export const jobs = pgTable("jobs", {
   id: uuid("id").primaryKey().defaultRandom(),
   pipelineId: uuid("pipeline_id")
     .notNull()
-    .references(() => pipelines.id),
+    .references(() => pipelines.id, { onDelete: "cascade" }),
   payload: varchar("payload", { length: 2000 }).notNull(),
   status: varchar("status", { length: 50 }).notNull().default("pending"),
 
