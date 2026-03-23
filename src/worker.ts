@@ -68,6 +68,7 @@ async function processJobs() {
             status: "pending",
             retryCount: currentRetry + 1,
             lastError: err.message,
+            updatedAt: new Date(),
           })
           .where(eq(jobs.id, job.id));
       } else {
