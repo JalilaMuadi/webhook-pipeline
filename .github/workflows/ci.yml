@@ -17,14 +17,14 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: webhook_test
+          POSTGRES_DB: webhook   
         ports:
-          - 5431:5432
+          - 5432:5432
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd="pg_isready -U postgres -d webhook"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - name: Check out code
@@ -33,24 +33,29 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20 
-          cache: 'npm'
+          node-version: 20
+          cache: npm
 
       - name: Install dependencies
-        run: |
-          npm install
+        run: npm install
 
-      - name: Check TypeScript Build
+      - name: Build
         run: npm run build
+
+      - name: Run migrations
+        run: npm run migrate
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/webhook
 
       - name: Run Tests
         run: npm run test
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/webhook_test
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/webhook
 
   style:
     name: Style
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -61,10 +66,10 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install 
+        run: npm install
 
       - name: Check Formatting
         run: npm run format:check
 
-      - name: check linting
+      - name: Check Linting
         run: npm run lint -- --max-warnings=0
