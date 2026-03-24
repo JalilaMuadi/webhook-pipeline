@@ -16,5 +16,3 @@ RUN npm run build
 
 # Expose the API port
 EXPOSE 5000
-
-# We will define the start command in docker-compose
