@@ -48,7 +48,7 @@ npm install
 Create a `.env` file with:
 
 ```bash
-DB_URL=postgres://postgres:postgres@localhost:5432/webhook
+DB_URL=postgres://postgres:postgres@localhost:5431/webhook
 ```
 
 ### 4. Run migrations
@@ -110,6 +110,27 @@ docker-compose up --build
 * `filter_high_price` → Skips items with price < 100
 * `format_for_discord` → Formats message for Discord
 * `passthrough` → Sends the payload as-is
+
+---
+
+## 🧪 Testing & Integration
+
+* **Manual & Automated Testing:**
+
+  * Unit tests for pipelines and payload transformations are implemented with **Vitest**.
+  * The worker job processing and retry logic are fully covered.
+
+* **Integration Testing:**
+
+  * Used [Webhook.site](https://webhook.site) to verify webhook delivery and observe payloads in real-time.
+  * Created a **master test script** (`integration-test.sh`) to automatically:
+
+    1. Create pipelines for all processing types
+    2. Add subscribers
+    3. Ingest test payloads
+    4. Simulate retry logic for failed deliveries
+
+> This approach ensures all pipeline types, transformations, and delivery attempts work as expected before production deployment.
 
 ---
 
