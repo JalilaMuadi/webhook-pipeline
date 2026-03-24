@@ -123,7 +123,7 @@ docker-compose up --build
 * **Integration Testing:**
 
   * Used [Webhook.site](https://webhook.site) to verify webhook delivery and observe payloads in real-time.
-  * Created a **master test script** (`integration-test.sh`) to automatically:
+  * Created a **master test script** (`test.sh`) to automatically:
 
     1. Create pipelines for all processing types
     2. Add subscribers
