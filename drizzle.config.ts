@@ -3,8 +3,8 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 export default defineConfig({
-  schema: "./src/db/schema.ts", 
-  out: "./src/db/migrations",       
+  schema: "./src/db/schema.ts",
+  out: "./src/db/migrations",
   dialect: "postgresql",
   dbCredentials: {
     url: process.env.DB_URL || "postgres://postgres:postgres@localhost:5431/webhook?sslmode=disable",
