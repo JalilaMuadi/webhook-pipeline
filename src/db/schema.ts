@@ -38,3 +38,20 @@ export const jobs = pgTable("jobs", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+// A table to track individual delivery attempts for better observability
+export const deliveryAttempts = pgTable("delivery_attempts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  jobId: uuid("job_id")
+    .notNull()
+    .references(() => jobs.id, { onDelete: "cascade" }),
+    
+  subscriberId: uuid("subscriber_id")
+    .notNull()
+    .references(() => subscribers.id, { onDelete: "cascade" }),
+
+  status: varchar("status", { length: 50 }).notNull(), 
+  statusCode: integer("status_code"), 
+  errorMessage: varchar("error_message", { length: 1000 }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});

@@ -2,7 +2,9 @@ import axios from "axios";
 import {
   getPendingJobsWithDetails,
   updateJobStatus,
+  createDeliveryAttempt,
 } from "./db/queries/jobs.js";
+
 import { getSubscribersByPipelineId } from "./db/queries/subscribers.js";
 import { transformPayload, ProcessingType } from "./processing/actions.js";
 import { db } from "./db/index.js";
@@ -10,6 +12,7 @@ import { jobs } from "./db/schema.js";
 import { eq } from "drizzle-orm";
 
 const MAX_RETRIES = 3;
+
 async function processJobs() {
   const pendingJobs = await getPendingJobsWithDetails();
 
@@ -35,12 +38,33 @@ async function processJobs() {
       );
 
       const deliveryResults = await Promise.allSettled(
-        subscribers.map((sub) =>
-          axios.post(sub.targetUrl, JSON.parse(finalPayload), {
-            headers: { "Content-Type": "application/json" },
-            timeout: 5000,
-          }),
-        ),
+        subscribers.map(async (sub) => {
+          try {
+            const response = await axios.post(sub.targetUrl, JSON.parse(finalPayload), {
+              headers: { "Content-Type": "application/json" },
+              timeout: 5000,
+            });
+
+            await createDeliveryAttempt({
+              jobId: job.id,
+              subscriberId: sub.id,
+              status: "success",
+              statusCode: response.status,
+            });
+
+            return response;
+          } catch (err: any) {
+            await createDeliveryAttempt({
+              jobId: job.id,
+              subscriberId: sub.id,
+              status: "failed",
+              statusCode: err.response?.status,
+              errorMessage: err.message,
+            });
+
+            throw err; 
+          }
+        }),
       );
 
       const failures = deliveryResults.filter((r) => r.status === "rejected");

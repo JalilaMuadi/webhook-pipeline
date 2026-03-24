@@ -1,6 +1,6 @@
 import { pipeline } from "node:stream";
 import { db } from "../index.js";
-import { jobs, pipelines } from "../schema.js";
+import { jobs, pipelines, deliveryAttempts, subscribers } from "../schema.js";
 import { eq, asc } from "drizzle-orm";
 
 export async function createJob(pipelineId: string, payload: string) {
@@ -56,5 +56,26 @@ export async function getJobById(id: string) {
     .innerJoin(pipelines, eq(jobs.pipelineId, pipelines.id))
     .where(eq(jobs.id, id));
 
-  return job;
+  if (!job) return null;
+
+  const attempts = await db
+    .select()
+    .from(deliveryAttempts)
+    .where(eq(deliveryAttempts.jobId, id))
+    .orderBy(asc(deliveryAttempts.createdAt));
+
+  return {
+    ...job,
+    deliveryAttempts: attempts,
+  };
+}
+
+export async function createDeliveryAttempt(data: {
+  jobId: string;
+  subscriberId: string;
+  status: string;
+  statusCode?: number;
+  errorMessage?: string;
+}) {
+  await db.insert(deliveryAttempts).values(data);
 }
