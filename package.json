@@ -14,12 +14,15 @@
     "worker": "npx tsc && node dist/worker.js",
     "lint": "eslint .",
     "format:write": "prettier --write \"src/**/*.{js,ts,json,css,md}\"",
-    "format:check": "prettier --check \"src/**/*.{js,ts,json,css,md}\""
+    "format:check": "prettier --check \"src/**/*.{js,ts,json,css,md}\"",
+    "start:prod": "npm run migrate && node dist/index.js",
+    "worker:prod": "node dist/worker.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@rolldown/binding-linux-x64-gnu": "^1.0.0-rc.11",
     "axios": "^1.13.6",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",

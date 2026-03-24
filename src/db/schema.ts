@@ -45,13 +45,13 @@ export const deliveryAttempts = pgTable("delivery_attempts", {
   jobId: uuid("job_id")
     .notNull()
     .references(() => jobs.id, { onDelete: "cascade" }),
-    
+
   subscriberId: uuid("subscriber_id")
     .notNull()
     .references(() => subscribers.id, { onDelete: "cascade" }),
 
-  status: varchar("status", { length: 50 }).notNull(), 
-  statusCode: integer("status_code"), 
+  status: varchar("status", { length: 50 }).notNull(),
+  statusCode: integer("status_code"),
   errorMessage: varchar("error_message", { length: 1000 }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

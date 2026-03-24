@@ -40,10 +40,14 @@ async function processJobs() {
       const deliveryResults = await Promise.allSettled(
         subscribers.map(async (sub) => {
           try {
-            const response = await axios.post(sub.targetUrl, JSON.parse(finalPayload), {
-              headers: { "Content-Type": "application/json" },
-              timeout: 5000,
-            });
+            const response = await axios.post(
+              sub.targetUrl,
+              JSON.parse(finalPayload),
+              {
+                headers: { "Content-Type": "application/json" },
+                timeout: 5000,
+              },
+            );
 
             await createDeliveryAttempt({
               jobId: job.id,
@@ -62,7 +66,7 @@ async function processJobs() {
               errorMessage: err.message,
             });
 
-            throw err; 
+            throw err;
           }
         }),
       );
